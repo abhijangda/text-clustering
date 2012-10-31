@@ -74,10 +74,10 @@ public class Cluster implements Comparable<Cluster> {
 			if (centroid == null) {
 				centroid = new Vector(document.getVector());
 			} else {
-				centroid.add(document.getVector());
+				centroid = centroid.add(document.getVector());
 			}
 		}
-		centroid.divide(size());
+		centroid = centroid.divide(size());
 		centroidNorm = centroid.norm();
 	}
 }

@@ -5,13 +5,11 @@ package com.cendrillon.clustering;
  */
 public abstract class DistanceMetric {
 	public double calcDistance(Cluster cluster1, Cluster cluster2) {
-		return calcDistance(cluster1.getCentroid(), cluster2.getCentroid(), cluster1.getCentroidNorm(),
-		    cluster2.getCentroidNorm());
+		return calcDistance(cluster1.getCentroid(), cluster2.getCentroid());
 	}
 
 	public double calcDistance(Document document, Cluster cluster) {
-		return calcDistance(document.getVector(), cluster.getCentroid(), document.getNorm(),
-		    cluster.getCentroidNorm());
+		return calcDistance(document.getVector(), cluster.getCentroid());
 	}
 
 	/**
@@ -27,9 +25,7 @@ public abstract class DistanceMetric {
 	}
 
 	/**
-	 * Calculate distance between two Vectors. The precalculated Vector norms are passed in to speed
-	 * up computation.
+	 * Calculate distance between two Vectors.
 	 */
-	protected abstract double
-	    calcDistance(Vector vector1, Vector vector2, double norm1, double norm2);
+	protected abstract double calcDistance(Vector vector1, Vector vector2);
 }

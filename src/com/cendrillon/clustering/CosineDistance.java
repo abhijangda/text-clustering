@@ -5,7 +5,7 @@ package com.cendrillon.clustering;
  */
 public class CosineDistance extends DistanceMetric {
 	@Override
-	protected double calcDistance(Vector vector1, Vector vector2, double norm1, double norm2) {
-		return 1 - vector1.innerProduct(vector2) / norm1 / norm2;
+	protected double calcDistance(Vector vector1, Vector vector2) {
+		return 1 - vector1.innerProduct(vector2) / vector1.norm() / vector2.norm();
 	}
 }

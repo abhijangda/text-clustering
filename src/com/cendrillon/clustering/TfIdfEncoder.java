@@ -44,35 +44,26 @@ public class TfIdfEncoder implements Encoder {
 	 * documents have already been calculated.
 	 */
 	private void calcInverseDocumentFrequency(DocumentList documentList) {
-		inverseDocumentFrequency = new Vector(numFeatures);
+		Vector documentFrequency = new Vector(numFeatures);
 		for (Document document : documentList) {
 			for (int i = 0; i < numFeatures; i++) {
 				if (document.getHistogram().get(i) > 0) {
-					inverseDocumentFrequency.increment(i);
+					documentFrequency.increment(i);
 				}
 			}
 		}
-		inverseDocumentFrequency.invert();
-		inverseDocumentFrequency.multiply(documentList.size());
-		inverseDocumentFrequency.log();
+		inverseDocumentFrequency = documentFrequency.invert().multiply(documentList.size()).log();
 	}
 
 	/**
 	 * Encode document using Term Frequency - Inverse Document Frequency.
 	 */
 	private void encode(Document document) {
-		// Normalize word histogram by maximum word frequency
-		Vector vector = new Vector(document.getHistogram());
-		// Allow histogram to be deallocated as it is no longer needed
-		document.setHistogram(null);
-		vector.divide(vector.max());
-		// Normalize by inverseDocumentFrequency
-		vector.multiply(inverseDocumentFrequency);
-		// Store feature vecotr in document
-		document.setVector(vector);
+		Vector tfidf = document.getHistogram().divide(document.getHistogram().max())
+		    .multiply(inverseDocumentFrequency);
+		document.setVector(tfidf);
 		// Precalculate norm for use in distance calculations
-		document.setNorm(vector.norm());
-
+		document.setNorm(tfidf.norm());
 	}
 
 	/**

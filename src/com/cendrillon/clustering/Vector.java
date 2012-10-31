@@ -21,17 +21,21 @@ public class Vector {
 	}
 
 	/** Add the provided Vector to this. */
-	public void add(Vector operand) {
+	public Vector add(Vector operand) {
+		Vector result = new Vector(size());
 		for (int i = 0; i < elements.length; i++) {
-			set(i, get(i) + operand.get(i));
+			result.set(i, get(i) + operand.get(i));
 		}
+		return result;
 	}
 
 	/** Divide this by the provided divisor. */
-	public void divide(double divisor) {
+	public Vector divide(double divisor) {
+		Vector result = new Vector(size());
 		for (int i = 0; i < elements.length; i++) {
-			set(i, get(i) / divisor);
+			result.set(i, get(i) / divisor);
 		}
+		return result;
 	}
 
 	/** Get the element of this Vector at the specified index. */
@@ -56,17 +60,21 @@ public class Vector {
 	}
 
 	/** Apply elementwise inversion to this. */
-	public void invert() {
+	public Vector invert() {
+		Vector result = new Vector(size());
 		for (int i = 0; i < elements.length; i++) {
-			set(i, 1 / get(i));
+			result.set(i, 1 / get(i));
 		}
+		return result;
 	}
 
 	/** Apply elementwise log to this. */
-	public void log() {
+	public Vector log() {
+		Vector result = new Vector(size());
 		for (int i = 0; i < elements.length; i++) {
-			set(i, Math.log(get(i)));
+			result.set(i, Math.log(get(i)));
 		}
+		return result;
 	}
 
 	/** Return maximal element. */
@@ -79,21 +87,25 @@ public class Vector {
 	}
 
 	/** Multiply this with the provided scalar multiplier. */
-	public void multiply(double multiplier) {
+	public Vector multiply(double multiplier) {
+		Vector result = new Vector(size());
 		for (int i = 0; i < elements.length; i++) {
-			set(i, get(i) * multiplier);
+			result.set(i, get(i) * multiplier);
 		}
+		return result;
 	}
 
 	/** Multiply this with the provided vector multiplier. */
-	public void multiply(Vector multiplier) {
+	public Vector multiply(Vector multiplier) {
+		Vector result = new Vector(size());
 		for (int i = 0; i < elements.length; i++) {
 			if (get(i) == 0 || multiplier.get(i) == 0) {
-				set(i, 0);
+				result.set(i, 0);
 			} else {
-				set(i, multiplier.get(i) * get(i));
+				result.set(i, multiplier.get(i) * get(i));
 			}
 		}
+		return result;
 	}
 
 	/** Calculate the L2 norm of this. */
@@ -108,5 +120,10 @@ public class Vector {
 	/** Set the specified element of this. */
 	public void set(int i, double value) {
 		elements[i] = value;
+	}
+
+	/** Return the number of elements in this. */
+	public int size() {
+		return elements.length;
 	}
 }
