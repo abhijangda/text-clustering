@@ -15,9 +15,7 @@ public class ClusterList implements Iterable<Cluster> {
 		clusters.add(cluster);
 	}
 
-	/**
-	 * Calculate average intercluster distance, which is the distance between cluster centroids.
-	 */
+	/** Calculate average intercluster distance, which is the distance between cluster centroids. */
 	private double calcInterClusterDistance(DistanceMetric distance) {
 		if (clusters.isEmpty()) {
 			return 0;
@@ -30,7 +28,7 @@ public class ClusterList implements Iterable<Cluster> {
 				}
 			}
 		}
-		// there are N*N-1 unique pairs of clusters
+		// there are N * N-1 unique pairs of clusters
 		return sumInterDist / (clusters.size() * (clusters.size() - 1));
 	}
 
@@ -39,17 +37,17 @@ public class ClusterList implements Iterable<Cluster> {
 	 * documents in a cluster and the cluster centroid.
 	 */
 	private double calcIntraClusterDistance(DistanceMetric distance) {
-		double avgIntraDist = 0;
+		double sumIntraClusterDistance = 0;
 		int numDocuments = 0;
 		for (Cluster cluster : clusters) {
-			double clusterIntraDist = 0;
+			double intraClusterDistance = 0;
 			for (Document document : cluster.getDocuments()) {
-				clusterIntraDist += distance.calcDistance(document, cluster);
+				intraClusterDistance += distance.calcDistance(document, cluster);
 			}
 			numDocuments += cluster.size();
-			avgIntraDist += clusterIntraDist;
+			sumIntraClusterDistance += intraClusterDistance;
 		}
-		return avgIntraDist / numDocuments;
+		return sumIntraClusterDistance / numDocuments;
 	}
 
 	/**
@@ -60,17 +58,16 @@ public class ClusterList implements Iterable<Cluster> {
 		if (clusters.isEmpty()) {
 			return Double.MAX_VALUE;
 		}
-		double interDist = calcInterClusterDistance(distance);
-		if (interDist > 0.0) {
-			return calcIntraClusterDistance(distance) / interDist;
+		double interClusterDistance = calcInterClusterDistance(distance);
+		if (interClusterDistance > 0.0) {
+			return calcIntraClusterDistance(distance) / interClusterDistance;
 		} else {
 			return Double.MAX_VALUE;
 		}
 	}
 
 	/**
-	 * Clear out documents from within each cluster. Used to cleanup at the end of each iteration of k
-	 * means.
+	 * Clear out documents from within each cluster. Used to cleanup after each clustering iteration.
 	 */
 	public void clear() {
 		for (Cluster cluster : clusters) {
@@ -81,7 +78,7 @@ public class ClusterList implements Iterable<Cluster> {
 	/**
 	 * Find document with maximum distance to clusters in ClusterList. Distance to ClusterList is
 	 * defined as the minimum of the distances to each constituent Cluster's centroid. This method is
-	 * used during the cluster initialization in k means clustering.
+	 * used during the cluster initialization in k-means clustering.
 	 */
 	public Document findFurthestDocument(DistanceMetric distance, DocumentList documentList) {
 		double furthestDistance = Double.MIN_VALUE;
@@ -98,9 +95,7 @@ public class ClusterList implements Iterable<Cluster> {
 		return furthestDocument;
 	}
 
-	/**
-	 * Find cluster whose centroid is closest to a document.
-	 */
+	/** Find cluster whose centroid is closest to a document. */
 	public Cluster findNearestCluster(DistanceMetric distance, Document document) {
 		Cluster nearestCluster = null;
 		double nearestDistance = Double.MAX_VALUE;
@@ -119,33 +114,35 @@ public class ClusterList implements Iterable<Cluster> {
 		return clusters.iterator();
 	}
 
+	/** Return the number of clusters in this ClusterList. */
 	public int size() {
 		return clusters.size();
 	}
 
 	/**
-	 * Sort order of documents within each cluster, then sort order of clusters within ClusterList
+	 * Sort order of documents within each cluster, then sort order of clusters within ClusterList.
 	 */
 	private void sort() {
 		for (Cluster cluster : this) {
-			Collections.sort(cluster.getDocuments());
+			cluster.sort();
 		}
 		Collections.sort(clusters);
 	}
 
 	/**
-	 * Display clusters in sorted order
+	 * Display clusters in sorted order.
 	 */
 	@Override
 	public String toString() {
 		sort();
 		StringBuilder sb = new StringBuilder();
-		sb.append("[ ");
+		int clusterIndex = 0;
 		for (Cluster cluster : clusters) {
+			sb.append("Cluster ");
+			sb.append(clusterIndex++);
+			sb.append("\n");
 			sb.append(cluster);
-			sb.append(" ");
 		}
-		sb.append("]");
 		return sb.toString();
 	}
 

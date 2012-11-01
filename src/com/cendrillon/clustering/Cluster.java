@@ -1,83 +1,70 @@
 package com.cendrillon.clustering;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/** Class representing a cluster of Documents. */
+/** Class representing a cluster of Documents on related topics. */
 public class Cluster implements Comparable<Cluster> {
-	private Vector centroid; // cluster centroid
-	private double centroidNorm; // norm of cluster centroid
-	private final ArrayList<Document> documents = new ArrayList<Document>();
+	private Vector centroid;
+	private final DocumentList documents = new DocumentList();
+	private final int numFeatures;
 
 	/** Construct a cluster with a single member document. */
 	public Cluster(Document document) {
-		documents.add(document);
+		add(document);
 		centroid = new Vector(document.getVector());
-		centroidNorm = centroid.norm();
+		numFeatures = document.getNumFeatures();
 	}
 
-	/**
-	 * Add document to cluster and mark document as allocated
-	 */
+	/** Add document to cluster and mark document as allocated. */
 	public void add(Document document) {
-		documents.add(document);
 		document.setIsAllocated();
+		documents.add(document);
 	}
 
-	/**
-	 * Remove all documents from a cluster.
-	 */
+	/** Remove all documents from a cluster. */
 	public void clear() {
+		documents.clearIsAllocated();
 		documents.clear();
 	}
 
-	/**
-	 * Allows sorting of Clusters by comparing ID of first document.
-	 */
+	/** Allows sorting of Clusters by comparing ID of first document. */
 	@Override
 	public int compareTo(Cluster cluster) {
+		if (documents.isEmpty() || cluster.documents.isEmpty()) {
+			return 0;
+		}
 		return documents.get(0).compareTo(cluster.documents.get(0));
 	}
 
+	/** Get centroid of cluster. */
 	public Vector getCentroid() {
 		return centroid;
 	}
 
-	public double getCentroidNorm() {
-		return centroidNorm;
-	}
-
-	public List<Document> getDocuments() {
+	/** Get documents in cluster. */
+	public DocumentList getDocuments() {
 		return documents;
 	}
 
+	/** Get the number of documents in the cluster. */
 	public int size() {
 		return documents.size();
 	}
 
+	/** Sort the documents within a cluster by document ID. */
+	public void sort() {
+		documents.sort();
+	}
+
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("[ ");
-		for (Document document : documents) {
-			sb.append(document.getId());
-			sb.append(" ");
-		}
-		sb.append("]");
-		return sb.toString();
+		return documents.toString();
 	}
 
 	/** Update centroids and centroidNorms for this cluster. */
 	public void updateCentroid() {
-		centroid = null;
+		centroid = new Vector(numFeatures);
 		for (Document document : documents) {
-			if (centroid == null) {
-				centroid = new Vector(document.getVector());
-			} else {
-				centroid = centroid.add(document.getVector());
-			}
+			centroid = centroid.add(document.getVector());
 		}
 		centroid = centroid.divide(size());
-		centroidNorm = centroid.norm();
 	}
 }

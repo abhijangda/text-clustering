@@ -1,7 +1,7 @@
 package com.cendrillon.clustering;
 
 /**
- * Class for calculating cosine distance between two vectors.
+ * Class for calculating cosine distance between Vectors.
  */
 public class CosineDistance extends DistanceMetric {
 	@Override

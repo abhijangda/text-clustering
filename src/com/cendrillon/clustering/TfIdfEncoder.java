@@ -2,7 +2,7 @@ package com.cendrillon.clustering;
 
 /**
  * Implementation of Encoder which uses Term Frequency - Inverse Document Frequency (TF-IDF)
- * encoding
+ * encoding.
  */
 public class TfIdfEncoder implements Encoder {
 	private final int numFeatures;
@@ -10,38 +10,39 @@ public class TfIdfEncoder implements Encoder {
 
 	/**
 	 * Construct a term frequency - inverse document frequency encoder. The encoder encodes documents
-	 * into vectors with the specified number of features.
+	 * into Vectors with the specified number of features.
 	 */
 	public TfIdfEncoder(int numFeatures) {
 		this.numFeatures = numFeatures;
 	}
 
 	/**
-	 * Calculate word histogram for document and store in histogram field.
+	 * Calculate word histogram for the provided document and store in the histogram field. To ensure
+	 * a constant size histogram Vector the words are first hashed to an integer between 0 and
+	 * numFeatures - 1.
 	 */
 	private void calcHistogram(Document document) {
-		// Calculate word histogram for document
 		String[] words = document.getContents().split("[^\\w]+");
 		Vector histogram = new Vector(numFeatures);
 		for (int i = 0; i < words.length; i++) {
-			int hashCode = hashWord(words[i]);
-			histogram.increment(hashCode);
+			histogram.increment(hashWord(words[i]));
 		}
 		document.setHistogram(histogram);
 	}
 
-	/**
-	 * Calculate word histogram for all documents in a DocumentList.
-	 */
+	/** Calculate word histograms for all documents in a DocumentList. */
 	private void calcHistogram(DocumentList documentList) {
 		for (Document document : documentList) {
 			calcHistogram(document);
 		}
+		documentList.setNumFeatures(numFeatures);
 	}
 
 	/**
-	 * Calculate inverse document frequency for DocumentList. Assumes word histograms for constituent
-	 * documents have already been calculated.
+	 * Calculate inverse document frequency for the provided DocumentList. The inverse document
+	 * frequency for a word i is defined as log(N/Ni) where N is the total number documents and Ni is
+	 * the number of documents where word i occurs. This method requires that the document histogram
+	 * for each document has already been calculated.
 	 */
 	private void calcInverseDocumentFrequency(DocumentList documentList) {
 		Vector documentFrequency = new Vector(numFeatures);
@@ -56,19 +57,17 @@ public class TfIdfEncoder implements Encoder {
 	}
 
 	/**
-	 * Encode document using Term Frequency - Inverse Document Frequency.
+	 * Encode the provided document using Term Frequency - Inverse Document Frequency. This method
+	 * requires that the inverse document frequency and document word histograms have already been
+	 * calculated.
 	 */
 	private void encode(Document document) {
 		Vector tfidf = document.getHistogram().divide(document.getHistogram().max())
 		    .multiply(inverseDocumentFrequency);
 		document.setVector(tfidf);
-		// Precalculate norm for use in distance calculations
-		document.setNorm(tfidf.norm());
 	}
 
-	/**
-	 * Encode all documents within a DocumentList.
-	 */
+	/** Encode all documents within the provided DocumentList. */
 	@Override
 	public void encode(DocumentList documentList) {
 		calcHistogram(documentList);
@@ -76,6 +75,7 @@ public class TfIdfEncoder implements Encoder {
 		for (Document document : documentList) {
 			encode(document);
 		}
+		documentList.setNumFeatures(numFeatures);
 	}
 
 	/**

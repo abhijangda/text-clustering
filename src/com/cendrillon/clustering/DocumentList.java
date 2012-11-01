@@ -1,36 +1,45 @@
 package com.cendrillon.clustering;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-/**
- * A class for storing a collection of documents to be clustered.
- */
+/** Class for storing a collection of documents to be clustered. */
 public class DocumentList implements Iterable<Document> {
-	List<Document> documents = new ArrayList<Document>();
+	private final List<Document> documents = new ArrayList<Document>();
+	private int numFeatures;
+
+	/** Construct an empty DocumentList. */
+	public DocumentList() {
+	}
 
 	/**
-	 * Parse input string into document ID, document title and contents then encode into feature
-	 * vector using encoder.
+	 * Construct a DocumentList by parsing the input string. The input string may contain multiple
+	 * document records. Each record must be delimited by curly braces {}.
 	 */
 	public DocumentList(String input) {
 		StringTokenizer st = new StringTokenizer(input, "{");
 		int numDocuments = st.countTokens() - 1;
 		String record = st.nextToken(); // skip empty split to left of {
-		Pattern pattern = Pattern.compile("\"content\": \"(.*)\", \"id\": (.*), \"title\": \"(.*)\"");
 		for (int i = 0; i < numDocuments; i++) {
 			record = st.nextToken();
-			Matcher matcher = pattern.matcher(record);
-			if (matcher.find()) {
-				String contents = matcher.group(1);
-				long documentID = Long.parseLong(matcher.group(2));
-				documents.add(new Document(documentID, contents));
+			Document document = Document.createDocument(record);
+			if (document != null) {
+				documents.add(document);
 			}
 		}
+	}
+
+	/** Add a document to the DocumentList. */
+	public void add(Document document) {
+		documents.add(document);
+	}
+
+	/** Clear all documents from the DocumentList. */
+	public void clear() {
+		documents.clear();
 	}
 
 	/** Mark all documents as not being allocated to a cluster. */
@@ -40,8 +49,19 @@ public class DocumentList implements Iterable<Document> {
 		}
 	}
 
+	/** Get a particular document from the DocumentList. */
 	public Document get(int index) {
 		return documents.get(index);
+	}
+
+	/** Get the number of features used to encode each document. */
+	public int getNumFeatures() {
+		return numFeatures;
+	}
+
+	/** Determine whether DocumentList is empty. */
+	public boolean isEmpty() {
+		return documents.isEmpty();
 	}
 
 	@Override
@@ -49,7 +69,29 @@ public class DocumentList implements Iterable<Document> {
 		return documents.iterator();
 	}
 
+	/** Set the number of features used to encode each document. */
+	public void setNumFeatures(int numFeatures) {
+		this.numFeatures = numFeatures;
+	}
+
+	/** Get the number of documents within the DocumentList. */
 	public int size() {
 		return documents.size();
+	}
+
+	/** Sort the documents within the DocumentList by document ID. */
+	public void sort() {
+		Collections.sort(documents);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (Document document : documents) {
+			sb.append("  ");
+			sb.append(document.toString());
+			sb.append("\n");
+		}
+		return sb.toString();
 	}
 }

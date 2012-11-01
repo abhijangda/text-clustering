@@ -1,19 +1,42 @@
 package com.cendrillon.clustering;
 
-/**
- * Class containing an individual document.
- */
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/** Class containing an individual document. */
 public class Document implements Comparable<Document> {
+	private static final Pattern PARSER = Pattern
+	    .compile("\"content\": \"(.*)\", \"id\": (.*), \"title\": \"(.*)\"");
+	private final String title;
+
 	private final String contents;
 	private final long id;
 	private boolean allocated;
 	private Vector histogram;
 	private Vector vector;
-	private double norm;
+	private int numFeatures;
 
-	public Document(long id, String contents) {
+	/**
+	 * Construct a document by parsing the provided string into document ID, contents and title. The
+	 * string must have the format "content": "<content>", "id": "<id>", "title": "<title>". If the
+	 * provided string has an invalid format then null is returned.
+	 */
+	public static Document createDocument(String record) {
+		Document document = null;
+		Matcher matcher = PARSER.matcher(record);
+		if (matcher.find()) {
+			String contents = matcher.group(1);
+			long documentID = Long.parseLong(matcher.group(2));
+			String title = matcher.group(3);
+			document = new Document(documentID, contents, title);
+		}
+		return document;
+	}
+
+	public Document(long id, String contents, String title) {
 		this.id = id;
 		this.contents = contents;
+		this.title = title;
 	}
 
 	/** Mark document as not being allocated to a cluster. */
@@ -33,25 +56,30 @@ public class Document implements Comparable<Document> {
 		}
 	}
 
+	/** Get the document contents. */
 	public String getContents() {
 		return contents;
 	}
 
-	/** Get document word histogram. */
+	/** Get document word histogram. The exact format is determined by the Encoder. */
 	public Vector getHistogram() {
 		return histogram;
 	}
 
+	/** Get the document ID. */
 	public long getId() {
 		return id;
 	}
 
-	/** Get norm of document feature vector. */
-	public double getNorm() {
-		return norm;
+	/** Get number of features in feature vector. */
+	public int getNumFeatures() {
+		return numFeatures;
 	}
 
-	/** Get encoded document feature vector. */
+	/**
+	 * Get feature vector for a document. This is typically a version of the histogram normalized for
+	 * word frequency. The exact format is determined by the Encoder.
+	 */
 	public Vector getVector() {
 		return vector;
 	}
@@ -61,6 +89,7 @@ public class Document implements Comparable<Document> {
 		return allocated;
 	}
 
+	/** Set the word histogram for a document. */
 	public void setHistogram(Vector histogram) {
 		this.histogram = histogram;
 	}
@@ -70,11 +99,16 @@ public class Document implements Comparable<Document> {
 		allocated = true;
 	}
 
-	public void setNorm(double norm) {
-		this.norm = norm;
-	}
-
+	/**
+	 * Set the feature vector for a document.
+	 */
 	public void setVector(Vector vector) {
 		this.vector = vector;
+		this.numFeatures = vector.size();
+	}
+
+	@Override
+	public String toString() {
+		return "Document: " + id + ", Title: " + title;
 	}
 }

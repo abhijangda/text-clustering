@@ -3,24 +3,23 @@ package com.cendrillon.clustering;
 import java.util.Arrays;
 
 /**
- * Vector helper class. Supports basic vector operations (add, multiply, divide etc.).
+ * A class representing a mathematical vector. Supports basic vector operations like add, multiply,
+ * divide etc.).
  */
 public class Vector {
 	private final double[] elements;
 
-	public Vector(double[] original) {
-		elements = Arrays.copyOf(original, original.length);
-	}
-
+	/** Construct a Vector with size elements. */
 	public Vector(int size) {
 		elements = new double[size];
 	}
 
+	/** Construct a Vector by copying the elements of the provided Vector. */
 	public Vector(Vector vector) {
 		elements = Arrays.copyOf(vector.elements, vector.elements.length);
 	}
 
-	/** Add the provided Vector to this. */
+	/** Add the provided Vector to this Vector. */
 	public Vector add(Vector operand) {
 		Vector result = new Vector(size());
 		for (int i = 0; i < elements.length; i++) {
@@ -29,7 +28,7 @@ public class Vector {
 		return result;
 	}
 
-	/** Divide this by the provided divisor. */
+	/** Divide this Vector by the provided divisor. */
 	public Vector divide(double divisor) {
 		Vector result = new Vector(size());
 		for (int i = 0; i < elements.length; i++) {
@@ -43,14 +42,12 @@ public class Vector {
 		return elements[i];
 	}
 
-	/** Apply elementwise increment to this. */
+	/** Apply elementwise increment to specified element of this Vector. */
 	public void increment(int i) {
 		set(i, get(i) + 1);
 	}
 
-	/**
-	 * Calculate the inner product of this with the provided vector.
-	 */
+	/** Calculate the inner product of this Vector with the provided Vector. */
 	public double innerProduct(Vector vector) {
 		double innerProduct = 0;
 		for (int i = 0; i < elements.length; i++) {
@@ -59,7 +56,7 @@ public class Vector {
 		return innerProduct;
 	}
 
-	/** Apply elementwise inversion to this. */
+	/** Apply elementwise inversion to this Vector. */
 	public Vector invert() {
 		Vector result = new Vector(size());
 		for (int i = 0; i < elements.length; i++) {
@@ -125,5 +122,10 @@ public class Vector {
 	/** Return the number of elements in this. */
 	public int size() {
 		return elements.length;
+	}
+
+	@Override
+	public String toString() {
+		return Arrays.toString(elements);
 	}
 }
