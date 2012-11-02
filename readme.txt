@@ -1,1 +1,1 @@
-Solutions for some of the CodeSprint 2012 problems. Main class is Solution.
+Solution for Newsle Clustering question from CodeSprint 2012. Implements clustering of text documents using Cosine or Jaccard distance between the feature vectors of the documents together with k means clustering.
