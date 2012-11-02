@@ -1,8 +1,6 @@
 package com.cendrillon.clustering;
 
-/**
- * Class for caculating Jaccard distance between Vectors.
- */
+/** Class for caculating Jaccard distance between Vectors. */
 public class JaccardDistance extends DistanceMetric {
 	@Override
 	protected double calcDistance(Vector vector1, Vector vector2) {

@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-/**
- * A class for storing a list of clusters. This is the output of the clustering process.
- */
+/** A class for storing a list of clusters. This is the output of the clustering process. */
 public class ClusterList implements Iterable<Cluster> {
 	private final ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 

@@ -1,8 +1,6 @@
 package com.cendrillon.clustering;
 
-/**
- * Class for calculating cosine distance between Vectors.
- */
+/** Class for calculating cosine distance between Vectors. */
 public class CosineDistance extends DistanceMetric {
 	@Override
 	protected double calcDistance(Vector vector1, Vector vector2) {
